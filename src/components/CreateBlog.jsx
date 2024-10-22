@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const CreateBlog = () => {
   const [html, setHtml] = useState('');
+  const [imageId, setimgaeId] = useState('');
 
   const navigate = useNavigate();
 
@@ -15,10 +16,30 @@ const CreateBlog = () => {
     setHtml(e.target.value);
   }
 
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0]
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await fetch("http://localhost:8000/api/save-temp-image", {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await res.json();
+
+    if(result.status == false){
+      alert(result.errors.image);
+      e.target.value = null;
+    }
+
+    setimgaeId(result.image.id);
+  }
+
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
   const formSubmit = async (data) => {
-    const newData = {...data, "description": html}
+    const newData = {...data, "description": html, image_id: imageId}
 
     const res = await fetch ("http://localhost:8000/api/blogs", {
       method: "POST",
@@ -59,7 +80,7 @@ const CreateBlog = () => {
         </div>
         <div className="mb-3">
             <label htmlFor="" className='form-label'>Image</label><br />
-            <input type="file" />
+            <input onChange={handleFileChange} type="file" />
         </div>
         <div className="mb-3">
             <label htmlFor="" className='form-label'>Author</label>
