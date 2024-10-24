@@ -23,7 +23,7 @@ const Blogs = () => {
       <div className='row pt-5 mb-4'>
         {
           (blogs) && blogs.map((blog) => {
-            return (<BlogCard blog={blog} key={blog.id}/>)
+            return (<BlogCard blogs={blogs} setBlogs={setBlogs} blog={blog} key={blog.id}/>)
           })
         }
       </div>
